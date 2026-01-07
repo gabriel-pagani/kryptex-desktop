@@ -49,7 +49,9 @@ def create_tables():
             notes TEXT,
             changed_at DATETIME DEFAULT CURRENT_TIMESTAMP,
 
-            FOREIGN KEY (password_id) REFERENCES passwords(id) ON DELETE SET NULL
+            FOREIGN KEY (password_id) REFERENCES passwords(id) ON DELETE SET NULL,
+            FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE RESTRICT,
+            FOREIGN KEY (type_id) REFERENCES password_types(id) ON DELETE RESTRICT   
         );
                              
         CREATE INDEX IF NOT EXISTS idx_passwords_user ON passwords(user_id);
