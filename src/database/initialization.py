@@ -9,6 +9,7 @@ def create_tables():
         CREATE TABLE IF NOT EXISTS users (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             username TEXT NOT NULL UNIQUE,
+            salt BLOB NOT NULL,
             master_password_hash TEXT NOT NULL
         );
                        
@@ -23,11 +24,13 @@ def create_tables():
             type_id INTEGER,
             service TEXT NOT NULL,
             login TEXT,
+            iv BLOB NOT NULL,
             password_encrypted BLOB NOT NULL,
             url TEXT,
             notes TEXT,
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
             updated_at DATETIME,
+            deleted_at DATETIME,
 
             FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE RESTRICT,
             FOREIGN KEY (type_id) REFERENCES password_types(id) ON DELETE RESTRICT
@@ -48,6 +51,8 @@ def create_tables():
                              
         CREATE TRIGGER IF NOT EXISTS trg_passwords_updated
         AFTER UPDATE ON passwords
+        FOR EACH ROW
+        WHEN NEW.updated_at IS OLD.updated_at
         BEGIN
             UPDATE passwords
             SET updated_at = CURRENT_TIMESTAMP
