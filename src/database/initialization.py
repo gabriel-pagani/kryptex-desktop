@@ -39,6 +39,8 @@ def create_tables():
         CREATE TABLE IF NOT EXISTS password_history (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             password_id INTEGER,
+            user_id INTEGER NOT NULL,
+            type_id INTEGER,
             service TEXT NOT NULL,
             login TEXT,
             iv BLOB NOT NULL,
@@ -70,6 +72,8 @@ def create_tables():
         BEGIN
             INSERT INTO password_history (
                 password_id,
+                user_id,
+                type_id,
                 service,
                 login,
                 iv,
@@ -80,6 +84,8 @@ def create_tables():
             )
             VALUES (
                 OLD.id,
+                OLD.user_id,
+                OLD.type_id,
                 OLD.service,
                 OLD.login,
                 OLD.iv,
@@ -96,6 +102,8 @@ def create_tables():
         BEGIN
             INSERT INTO password_history (
                 password_id,
+                user_id,
+                type_id,
                 service,
                 login,
                 iv,
@@ -106,6 +114,8 @@ def create_tables():
             )
             VALUES (
                 OLD.id,
+                OLD.user_id,
+                OLD.type_id,
                 OLD.service,
                 OLD.login,
                 OLD.iv,
