@@ -43,7 +43,7 @@ def create_tables():
             password_encrypted BLOB NOT NULL,
             changed_at DATETIME DEFAULT CURRENT_TIMESTAMP,
 
-            FOREIGN KEY (password_id) REFERENCES passwords(id) ON DELETE CASCADE
+            FOREIGN KEY (password_id) REFERENCES passwords(id) ON DELETE SET NULL
         );
                              
         CREATE INDEX IF NOT EXISTS idx_passwords_user ON passwords(user_id);
@@ -76,18 +76,6 @@ def create_tables():
                 OLD.password_encrypted,
                 CURRENT_TIMESTAMP
             );
-        END;
-
-        CREATE TRIGGER trg_block_password_history_delete
-        BEFORE DELETE ON password_history
-        WHEN EXISTS (
-            SELECT 1
-            FROM passwords
-            WHERE passwords.id = OLD.password_id
-        )
-        BEGIN
-            SELECT
-                RAISE(ABORT, 'Direct delete from password_history is not allowed');
         END;
         """)
 
