@@ -5,7 +5,9 @@ DB_FILE = 'db.sqlite3'
 
 
 def get_connection():
-    return sqlite3.connect(DB_FILE)
+    conn = sqlite3.connect(DB_FILE)
+    conn.execute("PRAGMA foreign_keys = ON;")
+    return conn
 
 
 def execute_query(query: str, param = None):
