@@ -1,15 +1,15 @@
 import sqlite3
 
 
-DB_NAME = 'db.sqlite3'
+DB_FILE = 'db.sqlite3'
 
 
 def get_connection():
-    return sqlite3.connect(DB_NAME)
+    return sqlite3.connect(DB_FILE)
 
 
 def execute_query(query: str, param = None):
-    with sqlite3.connect(DB_NAME) as conn:
+    with get_connection() as conn:
         cursor = conn.cursor()
 
         if param is not None:
