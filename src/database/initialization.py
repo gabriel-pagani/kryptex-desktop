@@ -38,7 +38,7 @@ def create_tables():
                        
         CREATE TABLE IF NOT EXISTS password_history (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            password_id INTEGER NOT NULL,
+            password_id INTEGER,
             iv BLOB NOT NULL,
             password_encrypted BLOB NOT NULL,
             changed_at DATETIME DEFAULT CURRENT_TIMESTAMP,
