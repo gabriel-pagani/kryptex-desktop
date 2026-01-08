@@ -12,7 +12,7 @@ class User:
         self.master_password_hash = master_password_hash
 
     @classmethod
-    def create(cls, username: str, master_password: str) -> None:
+    def create(cls, username: str, master_password: str) -> Optional['User']:
         salt = urandom(32)
         master_password_hash = generate_hash(master_password)
 
@@ -22,8 +22,11 @@ class User:
                 params=(username, master_password_hash, salt)
             )
 
+            return cls.get(username)
+
         except Exception as e:
             print(f"exception-on-create: {e}")
+            return None
 
     @classmethod
     def get(cls, username: str) -> Optional['User']:
@@ -35,9 +38,11 @@ class User:
             
             if response != []:
                 return cls(id=response[0][0], salt=response[0][1], username=response[0][2], master_password_hash=response[0][3])
+            return None
 
         except Exception as e:
             print(f"exception-on-read: {e}")
+            return None
 
     def delete(self) -> None:
         try:
