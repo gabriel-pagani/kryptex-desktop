@@ -42,8 +42,8 @@ class User:
     def delete(self) -> None:
         try:
             execute_query(
-                query="DELETE FROM users WHERE username = ?",
-                params=(self.username,)
+                query="DELETE FROM users WHERE id = ?",
+                params=(self.id,)
             )
 
         except Exception as e:
