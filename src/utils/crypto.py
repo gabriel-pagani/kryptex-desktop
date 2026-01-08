@@ -43,17 +43,17 @@ def derive_master_password(master_password: str, salt: bytes) -> bytes:
     )
 
 
-def encrypt_password(derived_master_password: bytes, password: str) -> tuple[bytes, bytes]:
+def encrypt_password(derived_master_password: bytes, password: str, associated_data: bytes) -> tuple[bytes, bytes]:
     aesgcm = AESGCM(derived_master_password)
     iv = os.urandom(12)
-    encrypted_password = aesgcm.encrypt(iv, password.encode(), None)
+    encrypted_password = aesgcm.encrypt(iv, password.encode(), associated_data)
     return (iv, encrypted_password)
 
 
-def decrypt_password(derived_master_password: bytes, iv: bytes, encrypted_password: bytes) -> str:
+def decrypt_password(derived_master_password: bytes, iv: bytes, encrypted_password: bytes, associated_data: bytes) -> str:
     try:
         aesgcm = AESGCM(derived_master_password)
-        decrypted_password = aesgcm.decrypt(iv, encrypted_password, None).decode()
+        decrypted_password = aesgcm.decrypt(iv, encrypted_password, associated_data).decode()
         return decrypted_password
     except InvalidTag:
         raise ValueError("Invalid key or Corrupted data")
