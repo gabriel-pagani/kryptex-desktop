@@ -7,7 +7,7 @@ load_dotenv()
 PEPPER = os.getenv("PEPPER", "")
 
 if PEPPER == "":
-    raise RuntimeError("CRITICAL ERROR: The environment variable 'PEPPER' is not defined.")
+    raise RuntimeError("error-on-crypto: PEPPER is missing.")
 
 password_hasher = PasswordHasher(
     time_cost=12,
