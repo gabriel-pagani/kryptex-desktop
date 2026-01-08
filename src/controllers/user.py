@@ -24,15 +24,12 @@ class User:
         except Exception as e:
             print(f"exception-on-create: {e}")
 
-    def delete(self) -> bool:
+    def delete(self) -> None:
         try:
             execute_query(
                 query="DELETE FROM users WHERE username = ?",
                 params=(self.username,)
             )
 
-            return True
-
         except Exception as e:
             print(f"exception-on-delete: {e}")
-            return False
