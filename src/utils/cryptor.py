@@ -1,5 +1,5 @@
 from dotenv import load_dotenv
-import os
+import os, secrets
 from argon2 import PasswordHasher, low_level
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 from cryptography.exceptions import InvalidTag
@@ -57,3 +57,8 @@ def decrypt_password(derived_master_password: bytes, iv: bytes, encrypted_passwo
         return decrypted_password
     except InvalidTag:
         raise ValueError("Invalid key or Corrupted data.")
+
+def generate_password() -> str:
+    characters = r"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%&-_=~^,.<>;:()[]{}"
+    password = ''.join(secrets.choice(characters) for _ in range(50))
+    return password
