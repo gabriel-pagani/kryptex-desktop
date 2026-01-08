@@ -33,7 +33,7 @@ def verify_hash(master_password_hash: str, master_password: str) -> bool:
 
 def derive_master_password(master_password: str, salt: bytes) -> bytes:
     return low_level.hash_secret_raw(
-        secret=master_password.encode(),
+        secret=(master_password + PEPPER).encode(),
         salt=salt,
         time_cost=12,
         memory_cost=262144,
