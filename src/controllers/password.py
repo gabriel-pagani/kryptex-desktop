@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, List
 from datetime import datetime
 from database.connection import execute_query
 from utils.cryptor import encrypt_password
@@ -104,6 +104,39 @@ class Password:
             print(f"exception-on-get: {e}")
             return None
 
+    @classmethod
+    def get_all_by_user(cls, user_id: int) -> List['Password']:
+        try:
+            response = execute_query(
+                "SELECT * FROM passwords WHERE user_id = ?",
+                (user_id,),
+            )
+
+            passwords = []
+            if response:
+                for row in response:
+                    passwords.append(
+                        cls(
+                            id=row[0],
+                            user_id=row[1],
+                            type_id=row[2],
+                            service=row[3],
+                            login=row[4],
+                            iv=row[5],
+                            encrypted_password=row[6],
+                            url=row[7],
+                            notes=row[8],
+                            created_at=row[9],
+                            updated_at=row[10],
+                            deleted_at=row[11],
+                        )
+                    )
+            return passwords
+
+        except Exception as e:
+            print(f"exception-on-get-all: {e}")
+            return []
+
     def update(
         self,
         user_key: bytes,
@@ -119,8 +152,9 @@ class Password:
             if not self.id:
                 return False
 
-            associated_data = f'user_id:{self.id};'.encode()
-            iv, encrypted_password = encrypt_password(user_key, password, associated_data)
+            if password:
+                associated_data = f'user_id:{self.id};'.encode()
+                iv, encrypted_password = encrypt_password(user_key, password, associated_data)
 
             fields = list()
             values = list()
