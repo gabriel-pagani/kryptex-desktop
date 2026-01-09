@@ -1,6 +1,7 @@
 from typing import Optional
 from datetime import datetime
 from database.connection import execute_query
+from utils.cryptor import encrypt_password
 
 
 class Password:
@@ -36,15 +37,18 @@ class Password:
     def create(
         cls,         
         user_id: int,
+        user_key: bytes,
         service: str,
-        iv: bytes,
-        encrypted_password: bytes,
+        password: str,
         type_id: Optional[int] = None,
         login: Optional[str] = None,
         url: Optional[str] = None,
         notes: Optional[str] = None,
     ) -> Optional['Password']:
         try:
+            associated_data = f'user_id:{user_id};'.encode()
+            iv, encrypted_password = encrypt_password(user_key, password, associated_data)
+            
             response = execute_query(
                 "INSERT INTO passwords (user_id, type_id, service, login, iv, encrypted_password, url, notes) VALUES (?, ?, ?, ?, ?, ?, ?, ?) RETURNING *",
                 (user_id, type_id, service, login, iv, encrypted_password, url, notes)
