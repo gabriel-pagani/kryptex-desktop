@@ -106,11 +106,11 @@ class Password:
 
     def update(
         self,
+        user_key: bytes,
         type_id: Optional[int] = None,
         service: Optional[str] = None,
         login: Optional[str] = None,
-        iv: Optional[bytes] = None,
-        encrypted_password: Optional[bytes] = None,
+        password: Optional[str] = None,
         url: Optional[str] = None,
         notes: Optional[str] = None,
         deleted_at: Optional[datetime] = None,
@@ -118,6 +118,9 @@ class Password:
         try:
             if not self.id:
                 return False
+
+            associated_data = f'user_id:{self.id};'.encode()
+            iv, encrypted_password = encrypt_password(user_key, password, associated_data)
 
             fields = list()
             values = list()
