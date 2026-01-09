@@ -1,5 +1,4 @@
 from typing import Optional
-from os import urandom
 from database.connection import execute_query
 
 
