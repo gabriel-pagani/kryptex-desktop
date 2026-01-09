@@ -13,7 +13,7 @@ class Login:
         self.page.title = 'Kryptex'
         self.page.window.icon = r''
         self.page.theme_mode = ft.ThemeMode.LIGHT
-        self.page.bgcolor = ft.Colors.GREY
+        self.page.bgcolor = ft.Colors.WHITE
         self.page.padding = 0
         self.page.update()
 
@@ -21,17 +21,17 @@ class Login:
         if type == 1:  # Success
             snack_bar = ft.SnackBar(
                 content=ft.Text(message, color=ft.Colors.WHITE),
-                bgcolor=ft.Colors.GREEN_600
+                bgcolor=ft.Colors.GREEN
             )
         elif type == 2:  # Warning
             snack_bar = ft.SnackBar(
                 content=ft.Text(message, color=ft.Colors.BLACK),
-                bgcolor=ft.Colors.AMBER_400
+                bgcolor=ft.Colors.YELLOW
             )
         elif type == 3:  # Error
             snack_bar = ft.SnackBar(
                 content=ft.Text(message, color=ft.Colors.WHITE),
-                bgcolor=ft.Colors.RED_600
+                bgcolor=ft.Colors.RED
             )
         else:
             raise ValueError('Invalid message type')
