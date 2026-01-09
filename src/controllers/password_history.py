@@ -13,7 +13,7 @@ class PasswordHistory:
         service: str,
         login: Optional[str],
         iv: bytes,
-        password_encrypted: bytes,
+        encrypted_password: bytes,
         url: Optional[str],
         notes: Optional[str],
         changed_at: datetime,
@@ -25,7 +25,7 @@ class PasswordHistory:
         self.service = service
         self.login = login
         self.iv = iv
-        self.password_encrypted = password_encrypted
+        self.encrypted_password = encrypted_password
         self.url = url
         self.notes = notes
         self.changed_at = changed_at
