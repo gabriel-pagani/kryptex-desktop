@@ -33,6 +33,45 @@ class Password:
         self.deleted_at = deleted_at
 
     @classmethod
+    def create(
+        cls,         
+        user_id: int,
+        service: str,
+        iv: bytes,
+        encrypted_password: bytes,
+        type_id: Optional[int] = None,
+        login: Optional[str] = None,
+        url: Optional[str] = None,
+        notes: Optional[str] = None,
+    ) -> Optional['Password']:
+        try:
+            response = execute_query(
+                "INSERT INTO passwords (user_id, type_id, service, login, iv, encrypted_password, url, notes) VALUES (?, ?, ?, ?, ?, ?, ?, ?) RETURNING *",
+                (user_id, type_id, service, login, iv, encrypted_password, url, notes)
+            )
+
+            if response != []:
+                return cls(
+                    id=response[0][0],
+                    user_id=response[0][1],
+                    type_id=response[0][2],
+                    service=response[0][3],
+                    login=response[0][4],
+                    iv=response[0][5],
+                    encrypted_password=response[0][6],
+                    url=response[0][7],
+                    notes=response[0][8],
+                    created_at=response[0][9],
+                    updated_at=response[0][10],
+                    deleted_at=response[0][11],
+                )
+            return None
+            
+        except Exception as e:
+            print(f"exception-on-create: {e}")
+            return None
+
+    @classmethod
     def get(cls, id: int) -> Optional['Password']:
         try:
             response = execute_query(
@@ -60,3 +99,19 @@ class Password:
         except Exception as e:
             print(f"exception-on-get: {e}")
             return None
+
+    def delete(self) -> bool:
+        try:
+            if not self.id:
+                return False
+            
+            execute_query(
+                "DELETE FROM passwords WHERE id = ?",
+                (self.id,)
+            )
+            
+            return True
+
+        except Exception as e:
+            print(f"exception-on-delete: {e}")
+            return False
