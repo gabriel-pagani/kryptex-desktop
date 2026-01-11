@@ -45,25 +45,32 @@ class User:
             return None, 3, f"An unexpected error occurred. Please try creating your account again later."
 
     @classmethod
-    def get(cls, id: int) -> Optional['User']:
+    def login(cls, username: str, master_password: str) -> Tuple[Optional['User'], Optional[bytes]]:
         try:
             response = execute_query(
-                "SELECT * FROM users WHERE id = ?",
-                (id,)
+                "SELECT * FROM users WHERE username = ?",
+                (username,)
             )
+
+            if not response:
+                return None, None
+
+            user = cls(
+                id=response[0][0], 
+                salt=response[0][1], 
+                username=response[0][2], 
+                master_password_hash=response[0][3]
+            )
+
+            if verify_hash(user.master_password_hash, master_password):
+                user_key = derive_master_password(master_password, user.salt)
+                return user, user_key
             
-            if response != []:
-                return cls(
-                    id=response[0][0], 
-                    salt=response[0][1], 
-                    username=response[0][2], 
-                    master_password_hash=response[0][3]
-                )
-            return None
+            return None, None
 
         except Exception as e:
-            print(f"exception-on-get: {e}")
-            return None
+            print(f"exception-on-login: {e}")
+            return None, None
 
     def update(self, current_master_password: str, new_username: Optional[str] = None, new_master_password: Optional[str] = None) -> bool:
         if not verify_hash(self.master_password_hash, current_master_password):
@@ -157,31 +164,3 @@ class User:
         except Exception as e:
             print(f"exception-on-delete: {e}")
             return False
-
-    @classmethod
-    def login(cls, username: str, master_password: str) -> Tuple[Optional['User'], Optional[bytes]]:
-        try:
-            response = execute_query(
-                "SELECT * FROM users WHERE username = ?",
-                (username,)
-            )
-
-            if not response:
-                return None, None
-
-            user = cls(
-                id=response[0][0], 
-                salt=response[0][1], 
-                username=response[0][2], 
-                master_password_hash=response[0][3]
-            )
-
-            if verify_hash(user.master_password_hash, master_password):
-                user_key = derive_master_password(master_password, user.salt)
-                return user, user_key
-            
-            return None, None
-
-        except Exception as e:
-            print(f"exception-on-login: {e}")
-            return None, None
