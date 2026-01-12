@@ -1,4 +1,5 @@
 import flet as ft
+import asyncio
 from controllers.user import User
 from utils.validator import validate_master_password
 
@@ -34,6 +35,11 @@ class App:
             snack_bar = ft.SnackBar(
                 content=ft.Text(message, color=ft.Colors.WHITE),
                 bgcolor=ft.Colors.RED
+            )
+        elif type == 4:  # Info
+            snack_bar = ft.SnackBar(
+                content=ft.Text(message, color=ft.Colors.WHITE),
+                bgcolor=ft.Colors.BLUE
             )
         else:
             raise ValueError('Invalid message type')
@@ -276,9 +282,14 @@ class App:
 
     def show_home_view(self):
         async def copy_to_clipboard():
-            await ft.Clipboard().set('Test')
+            await ft.Clipboard().set(...)
             self.show_message(1, "Text copied to clipboard!")
-        
+
+            await asyncio.sleep(15)
+                
+            await ft.Clipboard().set("")
+            self.show_message(4, "Clean clipboard for safety!")
+
         def logout(e):
             self.user = None
             self.user_key = None
