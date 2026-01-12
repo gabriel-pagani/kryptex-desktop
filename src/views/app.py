@@ -285,4 +285,59 @@ class App:
             self.page.clean()
             self.show_login_view()
 
+        # Components
+        popup_menu = ft.PopupMenuButton(
+            items=[
+                ft.PopupMenuItem(
+                    content=ft.Row(
+                        [
+                            ft.Icon(ft.Icons.PERSON, ft.Colors.BLACK),
+                            ft.Text("My Account"),
+                        ]
+                    ),
+                    on_click=...,
+                ),
+                ft.PopupMenuItem(
+                    content=ft.Row(
+                        [
+                            ft.Icon(ft.Icons.LOGOUT, ft.Colors.BLACK),
+                            ft.Text("Logout"),
+                        ]
+                    ),
+                    on_click=logout,
+                ),
+            ],
+            icon_color=ft.Colors.WHITE,
+            icon_size=30,
+        )
+
+        top_bar = ft.AppBar(
+            toolbar_height=80,
+            title=ft.Container(
+                content=ft.Text(
+                    "Kryptex",
+                    size=30,
+                    weight=ft.FontWeight.W_500,
+                ),
+                padding=ft.padding.only(left=16),
+            ),
+            center_title=False,
+            color=ft.Colors.WHITE,
+            bgcolor=ft.Colors.BLUE_900,
+            actions=[
+                ft.Container(popup_menu, padding=ft.padding.only(right=16)),
+            ],
+        )
+
         ...
+
+        # Layout
+        content = ft.Column(
+            controls=[
+                top_bar,
+            ],
+            spacing=5,
+            expand=True
+        )
+
+        self.page.add(content)
