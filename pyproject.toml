@@ -8,7 +8,9 @@ authors = [
     { name = "gabriel-pagani", email = "gabrielpaganidesouza@gmail.com" }
 ]
 dependencies = [
-  "flet>=0.80.1"
+  "flet>=0.80.1",
+  "argon2-cffi>=25.1.0",
+  "cryptography>=46.0.3",
 ]
 
 [dependency-groups]
