@@ -1,7 +1,7 @@
 [project]
-name = "none"
+name = "Kryptex"
 version = "0.1.0"
-description = ""
+description = "Local password manager with an absolute focus on security"
 readme = "README.md"
 requires-python = ">=3.10"
 authors = [
@@ -17,10 +17,10 @@ dev = [
 ]
 
 [tool.flet]
-org = "com.none"
-product = "none"
-company = "None"
-copyright = "Copyright (C) 2026 by None"
+org = "com.kryptex"
+product = "kryptex"
+company = "Kryptex"
+copyright = "Copyright (C) 2026 by Kryptex"
 
 [tool.flet.app]
 path = "src"
