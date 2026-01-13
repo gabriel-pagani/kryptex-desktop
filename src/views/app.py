@@ -401,6 +401,42 @@ class App:
         def close_dialog(e):
             self.page.pop_dialog()
             
+        def save_new_password(e):
+            if not service_input.value:
+                self.show_message(2, 'The service field is required!')
+                return
+            if not password_input.value:
+                self.show_message(2, 'The password field is required!')
+                return
+
+            new_password = Password.create(
+                user_id=self.user.id,
+                user_key=self.user_key,
+                service=service_input.value,
+                password=password_input.value,
+                type_id=int(type_dropdown.value) if type_dropdown.value else None,
+                login=login_input.value,
+                url=url_input.value,
+                notes=notes_input.value
+            )
+
+            if new_password:
+                self.passwords = Password.get_all_by_user(self.user.id)
+                tiles_list.controls = build_expansion_tiles_controls(search_input.value)
+                self.page.update()
+                
+                service_input.value = ""
+                login_input.value = ""
+                password_input.value = ""
+                url_input.value = ""
+                notes_input.value = ""
+                type_dropdown.value = None
+                
+                close_dialog(e)
+                self.show_message(1, "Password saved successfully!")
+            else:
+                self.show_message(3, "Error saving password! Please try again later.")
+
         def open_new_password_dialog(e):
             self.page.show_dialog(new_password_dialog)
 
@@ -473,16 +509,87 @@ class App:
             controls=build_expansion_tiles_controls(),
         )
 
+        # Dialog inputs
+        service_input = ft.TextField(
+            label="Service", 
+            prefix_icon=ft.Icons.PUBLIC,
+            border_color=ft.Colors.BLUE_400,
+            cursor_color=ft.Colors.BLUE_900,
+            width=400,
+        )
+        
+        login_input = ft.TextField(
+            label="Login/Username", 
+            prefix_icon=ft.Icons.PERSON,
+            border_color=ft.Colors.BLUE_400,
+            cursor_color=ft.Colors.BLUE_900,
+            width=400,
+        )
+        
+        password_input = ft.TextField(
+            label="Password", 
+            password=True, 
+            can_reveal_password=True, 
+            prefix_icon=ft.Icons.KEY,
+            border_color=ft.Colors.BLUE_400,
+            cursor_color=ft.Colors.BLUE_900,
+            width=400,
+        )
+
+        type_dropdown = ft.Dropdown(
+            label="Type",
+            border_color=ft.Colors.BLUE_400,
+            focused_border_color=ft.Colors.BLUE_900,
+            width=400,
+            options=[
+                *(ft.dropdown.Option(key=str(t.id), text=t.name) for t in self.password_types),
+                ft.dropdown.Option(key="", text="Others"),
+            ],
+            key="",
+            text="Others",
+            leading_icon=ft.Icons.CATEGORY,
+        )
+
+        url_input = ft.TextField(
+            label="URL", 
+            prefix_icon=ft.Icons.LINK,
+            border_color=ft.Colors.BLUE_400,
+            cursor_color=ft.Colors.BLUE_900,
+            width=400,
+        )
+        
+        notes_input = ft.TextField(
+            label="Notes", 
+            multiline=True, 
+            min_lines=3, 
+            max_lines=3, 
+            prefix_icon=ft.Icons.NOTES,
+            border_color=ft.Colors.BLUE_400,
+            cursor_color=ft.Colors.BLUE_900,
+            width=400,
+        )
+
         new_password_dialog = ft.AlertDialog(
             modal=True,
             title=ft.Text("New Password"),
             content=ft.Column(
-                controls=[],
+                controls=[
+                    service_input,
+                    login_input,
+                    password_input,
+                    type_dropdown,
+                    url_input,
+                    notes_input
+                ],
                 expand=True,
+                scroll=ft.ScrollMode.AUTO,
+                height=400,
+                alignment=ft.MainAxisAlignment.START,
+                spacing=10
             ),
             actions=[
-                ft.TextButton("Cancel", on_click=close_dialog),
-                ft.TextButton("Save", on_click=close_dialog),
+                ft.TextButton("Cancel", style=ft.TextStyle(color=ft.Colors.BLUE_900), on_click=close_dialog),
+                ft.TextButton("Save", style=ft.TextStyle(color=ft.Colors.BLUE_900), on_click=save_new_password),
             ],
             actions_alignment=ft.MainAxisAlignment.END,
         )
