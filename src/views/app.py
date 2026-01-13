@@ -359,6 +359,15 @@ class App:
             ],
         )
 
+        search_input = ft.TextField(
+            hint_text="Search here for services, logins, URLs, notes...",
+            prefix_icon=ft.Icons.SEARCH,
+            border_color=ft.Colors.BLUE_400,
+            cursor_color=ft.Colors.BLUE_900,
+            expand=True,
+            on_change=...,
+        )
+
         # Groups passwords by type
         passwords_by_type = dict()
         for type in self.password_types:
@@ -387,6 +396,10 @@ class App:
                         subtitle=ft.Text(password.login) if password.login else None,
                     )
                 )
+
+            if not tile_controls:
+                    continue
+            
             expansion_tiles_controls.append(
                 ft.ExpansionTile(
                     title=ft.Text(password_type, weight=ft.FontWeight.BOLD),
@@ -403,13 +416,21 @@ class App:
                 )
             )
 
+        tiles_list = ft.ListView(
+            expand=True,
+            spacing=6,
+            padding=ft.Padding.only(left=12, right=12, top=8, bottom=12),
+            controls=expansion_tiles_controls,
+        )
+
         # Layout
         content = ft.Column(
             controls=[
                 top_bar,
-                *expansion_tiles_controls,
+                ft.Container(search_input, padding=ft.Padding.only(left=12, right=12, top=10, bottom=4)),
+                tiles_list,
             ],
-            spacing=5,
+            spacing=4,
             expand=True,
         )
 
