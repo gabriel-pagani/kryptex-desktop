@@ -22,6 +22,8 @@ class App:
         self.page.theme_mode = ft.ThemeMode.LIGHT
         self.page.bgcolor = ft.Colors.WHITE
         self.page.padding = 0
+        self.page.window.width = 600
+        self.page.window.height = 750
         self.page.update()
 
     def show_message(self, type: int, message: str):
@@ -357,12 +359,55 @@ class App:
             ],
         )
 
-        ...
+        # Groups passwords by type
+        passwords_by_type = dict()
+        for type in self.password_types:
+            temp_passwords_by_type = list()
+            for password in self.passwords:
+                if password.type_id == type.id:
+                    temp_passwords_by_type.append(password)
+                    
+            passwords_by_type[type.name] = temp_passwords_by_type
+
+        temp_passwords_by_type = list()
+        for password in self.passwords:
+            if password.type_id is None:
+                temp_passwords_by_type.append(password)
+                    
+            passwords_by_type['Others'] = temp_passwords_by_type
+
+        # Create the expansion tiles based on the password dictionary
+        expansion_tiles_controls = list()
+        for password_type, passwords in passwords_by_type.items():
+            tile_controls = list()
+            for password in passwords:
+                tile_controls.append(
+                    ft.ListTile(
+                        title=ft.Text(password.service),
+                        subtitle=ft.Text(password.login) if password.login else None,
+                    )
+                )
+            expansion_tiles_controls.append(
+                ft.ExpansionTile(
+                    title=ft.Text(password_type, weight=ft.FontWeight.BOLD),
+                    subtitle=ft.Text(f"{len(tile_controls)} Item(s)", style=ft.TextStyle(italic=True)),
+                    affinity=ft.TileAffinity.PLATFORM,
+                    maintain_state=True,
+                    shape=ft.RoundedRectangleBorder(
+                        side=ft.BorderSide(color=ft.Colors.TRANSPARENT, width=0)
+                    ),
+                    collapsed_shape=ft.RoundedRectangleBorder(
+                        side=ft.BorderSide(color=ft.Colors.TRANSPARENT, width=0)
+                    ),
+                    controls=tile_controls,
+                )
+            )
 
         # Layout
         content = ft.Column(
             controls=[
                 top_bar,
+                *expansion_tiles_controls,
             ],
             spacing=5,
             expand=True,
