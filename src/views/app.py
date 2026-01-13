@@ -306,6 +306,57 @@ class App:
             self.page.clean()
             self.show_login_view()
 
+        def build_expansion_tiles_controls(query: str = None) -> list[ft.Control]:
+            # Groups passwords by type
+            passwords_by_type = dict()
+            for type in self.password_types:
+                temp_passwords_by_type = list()
+                for password in self.passwords:
+                    if password.type_id == type.id:
+                        temp_passwords_by_type.append(password)
+                        
+                passwords_by_type[type.name] = temp_passwords_by_type
+
+            temp_passwords_by_type = list()
+            for password in self.passwords:
+                if password.type_id is None:
+                    temp_passwords_by_type.append(password)
+                        
+                passwords_by_type['Others'] = temp_passwords_by_type
+
+            # Create the expansion tiles based on the password dictionary
+            expansion_tiles_controls = list()
+            for password_type, passwords in passwords_by_type.items():
+                tile_controls = list()
+                for password in passwords:
+                    tile_controls.append(
+                        ft.ListTile(
+                            title=ft.Text(password.service),
+                            subtitle=ft.Text(password.login) if password.login else None,
+                        )
+                    )
+
+                if not tile_controls:
+                        continue
+                
+                expansion_tiles_controls.append(
+                    ft.ExpansionTile(
+                        title=ft.Text(password_type, weight=ft.FontWeight.BOLD),
+                        subtitle=ft.Text(f"{len(tile_controls)} Item(s)", style=ft.TextStyle(italic=True)),
+                        affinity=ft.TileAffinity.PLATFORM,
+                        maintain_state=True,
+                        shape=ft.RoundedRectangleBorder(
+                            side=ft.BorderSide(color=ft.Colors.TRANSPARENT, width=0)
+                        ),
+                        collapsed_shape=ft.RoundedRectangleBorder(
+                            side=ft.BorderSide(color=ft.Colors.TRANSPARENT, width=0)
+                        ),
+                        controls=tile_controls,
+                    )
+                )
+            
+            return expansion_tiles_controls
+
         # Components
         popup_menu = ft.PopupMenuButton(
             items=[
@@ -368,59 +419,11 @@ class App:
             on_change=...,
         )
 
-        # Groups passwords by type
-        passwords_by_type = dict()
-        for type in self.password_types:
-            temp_passwords_by_type = list()
-            for password in self.passwords:
-                if password.type_id == type.id:
-                    temp_passwords_by_type.append(password)
-                    
-            passwords_by_type[type.name] = temp_passwords_by_type
-
-        temp_passwords_by_type = list()
-        for password in self.passwords:
-            if password.type_id is None:
-                temp_passwords_by_type.append(password)
-                    
-            passwords_by_type['Others'] = temp_passwords_by_type
-
-        # Create the expansion tiles based on the password dictionary
-        expansion_tiles_controls = list()
-        for password_type, passwords in passwords_by_type.items():
-            tile_controls = list()
-            for password in passwords:
-                tile_controls.append(
-                    ft.ListTile(
-                        title=ft.Text(password.service),
-                        subtitle=ft.Text(password.login) if password.login else None,
-                    )
-                )
-
-            if not tile_controls:
-                    continue
-            
-            expansion_tiles_controls.append(
-                ft.ExpansionTile(
-                    title=ft.Text(password_type, weight=ft.FontWeight.BOLD),
-                    subtitle=ft.Text(f"{len(tile_controls)} Item(s)", style=ft.TextStyle(italic=True)),
-                    affinity=ft.TileAffinity.PLATFORM,
-                    maintain_state=True,
-                    shape=ft.RoundedRectangleBorder(
-                        side=ft.BorderSide(color=ft.Colors.TRANSPARENT, width=0)
-                    ),
-                    collapsed_shape=ft.RoundedRectangleBorder(
-                        side=ft.BorderSide(color=ft.Colors.TRANSPARENT, width=0)
-                    ),
-                    controls=tile_controls,
-                )
-            )
-
         tiles_list = ft.ListView(
             expand=True,
             spacing=6,
             padding=ft.Padding.only(left=12, right=12, top=8, bottom=12),
-            controls=expansion_tiles_controls,
+            controls=build_expansion_tiles_controls(),
         )
 
         # Layout
