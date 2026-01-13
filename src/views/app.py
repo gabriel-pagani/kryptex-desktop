@@ -4,6 +4,7 @@ from controllers.user import User
 from controllers.password import Password
 from controllers.password_type import PasswordType
 from utils.validator import validate_master_password
+from utils.cryptor import generate_password
 
 
 class App:
@@ -400,7 +401,11 @@ class App:
 
         def close_dialog(e):
             self.page.pop_dialog()
-            
+
+        def generate_random_password(e):
+            password_input.value = generate_password()
+            password_input.update()
+
         def save_new_password(e):
             if not service_input.value:
                 self.show_message(2, 'The service field is required!')
@@ -533,7 +538,13 @@ class App:
             prefix_icon=ft.Icons.KEY,
             border_color=ft.Colors.BLUE_400,
             cursor_color=ft.Colors.BLUE_900,
-            width=400,
+            width=350,
+        )
+
+        generate_password_button = ft.IconButton(
+            icon=ft.Icons.AUTO_AWESOME,
+            tooltip="Generate random password",
+            on_click=generate_random_password
         )
 
         type_dropdown = ft.Dropdown(
@@ -576,7 +587,11 @@ class App:
                 controls=[
                     service_input,
                     login_input,
-                    password_input,
+                    ft.Row(
+                        controls=[password_input, generate_password_button], 
+                        vertical_alignment=ft.CrossAxisAlignment.CENTER,
+                        spacing=10,
+                    ),
                     type_dropdown,
                     url_input,
                     notes_input
