@@ -11,6 +11,8 @@ class App:
         self.page = page
         self.user = None
         self.user_key = None
+        self.passwords = list()
+        self.password_types = list()
         self.setup_page()
         self.show_login_view()
 
@@ -71,6 +73,8 @@ class App:
                 if user:
                     self.user = user
                     self.user_key = user_key
+                    self.passwords = Password.get_all_by_user(self.user.id)
+                    self.password_types = PasswordType.get_all()
                     self.page.clean()
                     self.show_home_view()
                     self.show_message(msg_type, msg)
@@ -295,6 +299,8 @@ class App:
         def logout(e):
             self.user = None
             self.user_key = None
+            self.passwords = list()
+            self.password_types = list()
             self.page.clean()
             self.show_login_view()
 
@@ -359,7 +365,7 @@ class App:
                 top_bar,
             ],
             spacing=5,
-            expand=True
+            expand=True,
         )
 
         self.page.add(content)
