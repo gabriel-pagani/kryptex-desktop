@@ -306,6 +306,19 @@ class App:
             self.page.clean()
             self.show_login_view()
 
+        def placeholder(text: str) -> ft.Control:
+            return ft.Container(
+                content=ft.Text(
+                    text,
+                    size=16,
+                    color=ft.Colors.GREY_700,
+                    text_align=ft.TextAlign.CENTER,
+                ),
+                alignment=ft.Alignment.CENTER,
+                expand=True,
+                padding=ft.Padding.only(top=30),
+            )
+
         def build_expansion_tiles_controls(filter: str = None) -> list[ft.Control]:
             # Filter
             if filter:
@@ -324,6 +337,12 @@ class App:
                 ]
             else:
                 filtered_passwords = self.passwords
+
+            # Placeholder
+            if not filtered_passwords:
+                if filter:
+                    return [placeholder(f'No results found for "{filter}"')]
+                return [placeholder("You haven't saved any passwords yet!")]
             
             # Groups passwords by type
             passwords_by_type = dict()
