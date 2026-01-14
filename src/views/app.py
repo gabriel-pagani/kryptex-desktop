@@ -482,6 +482,9 @@ class App:
                 close_dialog(e)
                 self.show_message(3, "Error saving password! Please try again later.")
 
+        def save_edited_password(e):
+            ...
+
         # Components
         popup_menu = ft.PopupMenuButton(
             items=[
@@ -670,7 +673,7 @@ class App:
             ),
             actions=[
                 ft.TextButton("Cancel", style=ft.TextStyle(color=ft.Colors.BLUE_900), on_click=close_dialog),
-                ft.TextButton("Save", style=ft.TextStyle(color=ft.Colors.BLUE_900), on_click=...),
+                ft.TextButton("Save", style=ft.TextStyle(color=ft.Colors.BLUE_900), on_click=save_edited_password),
             ],
             actions_alignment=ft.MainAxisAlignment.END,
         )
