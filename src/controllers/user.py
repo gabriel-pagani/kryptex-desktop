@@ -77,7 +77,6 @@ class User:
             print(f"exception-on-login: {e}")
             return None, None, 3, "An unexpected error occurred! Please try logging in again later."
 
-    # TO UPDATE!!!
     def update(
             self, 
             current_master_password: str, 
@@ -88,7 +87,7 @@ class User:
         if not verify_hash(self.master_password_hash, current_master_password):
             return False
 
-        if not new_username and not new_master_password and not is_admin:
+        if not new_username and not new_master_password and is_admin is None:
             return False
 
         # Usa conexão direta para garantir transação atômica (Rollback em caso de erro)
@@ -108,26 +107,25 @@ class User:
                 
                 # Busca todas as senhas do usuário
                 cursor.execute(
-                    "SELECT id, iv, encrypted_password FROM passwords WHERE user_id = ?", 
+                    "SELECT id, iv, encrypted_data FROM passwords WHERE user_id = ?", 
                     (self.id,)
                 )
                 passwords = cursor.fetchall()
 
                 associated_data = f'user_id:{self.id};'.encode()
 
-                # Loop de Migração: Descriptografar (Velha) -> Criptografar (Nova)
-                for password_id, iv, encrypted_password in passwords:
+                for password_id, iv, encrypted_data_blob in passwords:
                     try:
-                        # Descriptografa com chave antiga
-                        decrypted_password = decrypt_password(old_key, iv, encrypted_password, associated_data)
+                        # 1. Descriptografa para obter o dicionário (JSON)
+                        data_dict = decrypt_data(old_key, iv, encrypted_data_blob, associated_data)
                         
-                        # Criptografa com chave nova
-                        new_iv, new_encrypted_password = encrypt_password(new_key, decrypted_password, associated_data)
+                        # 2. Criptografa o dicionário novamente com a nova chave
+                        new_iv, new_encrypted_data = encrypt_data(new_key, data_dict, associated_data)
                         
                         # Atualiza no banco
                         cursor.execute(
-                            "UPDATE passwords SET iv = ?, encrypted_password = ? WHERE id = ?",
-                            (new_iv, new_encrypted_password, password_id)
+                            "UPDATE passwords SET iv = ?, encrypted_data = ? WHERE id = ?",
+                            (new_iv, new_encrypted_data, password_id)
                         )
                     except Exception as e:
                         raise Exception(f"Failed to migrate password (ID={password_id}): {e}")
