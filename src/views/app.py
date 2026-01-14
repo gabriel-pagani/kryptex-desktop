@@ -662,7 +662,7 @@ class App:
 
         new_password_dialog = ft.AlertDialog(
             modal=True,
-            title=ft.Text("New Password"),
+            title=ft.Text("New password"),
             content=ft.Column(
                 controls=[
                     service_input,
@@ -691,7 +691,7 @@ class App:
 
         edit_password_dialog = ft.AlertDialog(
             modal=True,
-            title=ft.Text("Edit Password"),
+            title=ft.Text("Edit password"),
             content=ft.Column(
                 controls=[
                     service_input,
