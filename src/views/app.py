@@ -302,15 +302,34 @@ class App:
             except Exception as ex:
                 self.show_message(3, "Error exporting database! Please try again later.")
 
-        async def import_database(e):
-            file = await ft.FilePicker().pick_files(file_type=ft.FilePickerFileType.CUSTOM, allowed_extensions=["sqlite3"], allow_multiple=False)
-            
+        def confirm_import_database(e, import_path):
             try:
-                shutil.copy(file[0].path, DB_PATH)
+                shutil.copy(import_path, DB_PATH)
                 self.show_message(1, "Database imported successfully!")
+                self.page.pop_dialog()
                 logout(e)
             except Exception as ex:
                 self.show_message(3, "Error importing database! Please try again later.")
+
+        def cancel_import_database(e):
+            self.page.pop_dialog()
+
+        async def import_database(e):
+            file = await ft.FilePicker().pick_files(file_type=ft.FilePickerFileType.CUSTOM, allowed_extensions=["sqlite3"], allow_multiple=False)
+            
+            import_confirmation_dialog = ft.AlertDialog(
+                modal=True,
+                title=ft.Text("Confirm import"),
+                content=ft.Text("Importing a new database will overwrite all your current data. This action cannot be undone. Are you sure?"),
+                actions=[
+                    ft.TextButton("No", on_click=cancel_import_database),
+                    ft.TextButton("Yes", on_click=lambda e: confirm_import_database(e, file[0].path)),
+                ],
+                actions_alignment=ft.MainAxisAlignment.END,
+            )
+            
+            if file:
+                self.page.show_dialog(import_confirmation_dialog)
 
         def logout(e):
             self.user = None
@@ -560,7 +579,7 @@ class App:
             delete_confirmation_dialog = ft.AlertDialog(
                 modal=True,
                 title=ft.Text("Confirm deletion"),
-                content=ft.Text("Are you sure you want to delete this password?"),
+                content=ft.Text("Are you sure you want to delete this password? This action cannot be undone."),
                 actions=[
                     ft.TextButton("No", on_click=cancel_delete_password),
                     ft.TextButton("Yes", on_click=confirm_delete_password),
