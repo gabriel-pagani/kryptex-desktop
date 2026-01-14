@@ -292,8 +292,15 @@ class App:
         self.page.add(container)
 
     def show_home_view(self):
-        def export_database(e):
-            ...
+        async def export_database(e):
+            file_picker = ft.FilePicker()
+            path = await file_picker.save_file(file_name='db.sqlite3', file_type=ft.FilePickerFileType.CUSTOM, allowed_extensions=['sqlite3'])
+            
+            try:
+                shutil.copy(DB_PATH, path)
+                self.show_message(1, "Database exported successfully!")
+            except Exception as ex:
+                self.show_message(3, "Error exporting database! Please try again later.")
 
         def import_database(e):
             ...
