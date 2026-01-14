@@ -84,7 +84,7 @@ class Password:
     def get_all_by_user(cls, user_id: int) -> List['Password']:
         try:
             response = execute_query(
-                "SELECT * FROM passwords WHERE user_id = ? ORDER BY service",
+                "SELECT * FROM passwords WHERE user_id = ?",
                 (user_id,),
             )
 
@@ -96,15 +96,10 @@ class Password:
                             id=row[0],
                             user_id=row[1],
                             type_id=row[2],
-                            service=row[3],
-                            login=row[4],
-                            iv=row[5],
-                            encrypted_password=row[6],
-                            url=row[7],
-                            notes=row[8],
-                            created_at=row[9],
-                            updated_at=row[10],
-                            deleted_at=row[11],
+                            iv=row[3],
+                            encrypted_data=row[4],
+                            created_at=row[5],
+                            updated_at=row[6],
                         )
                     )
             return passwords
