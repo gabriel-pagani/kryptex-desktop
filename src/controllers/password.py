@@ -10,28 +10,18 @@ class Password:
         id: int,
         user_id: int,
         type_id: Optional[int],
-        service: str,
-        login: Optional[str],
         iv: bytes,
-        encrypted_password: bytes,
-        url: Optional[str],
-        notes: Optional[str],
+        encrypted_data: bytes,
         created_at: datetime,
         updated_at: Optional[datetime],
-        deleted_at: Optional[datetime],
     ):
         self.id = id
         self.user_id = user_id
         self.type_id = type_id
-        self.service = service
-        self.login = login
         self.iv = iv
-        self.encrypted_password = encrypted_password
-        self.url = url
-        self.notes = notes
+        self.encrypted_data = encrypted_data
         self.created_at = created_at
         self.updated_at = updated_at
-        self.deleted_at = deleted_at
 
     @classmethod
     def create(
