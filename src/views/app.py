@@ -483,7 +483,23 @@ class App:
                 self.show_message(3, "Error saving password! Please try again later.")
 
         def save_edited_password(e):
-            ...
+            service_input.error = None
+            password_input.error = None
+            
+            has_error = False
+
+            if not service_input.value:
+                service_input.error = 'The service field is required!'
+                has_error = True
+
+            if not password_input.value:
+                password_input.error = 'The password field is required!'
+                has_error = True
+            
+            if has_error:
+                service_input.update()
+                password_input.update()
+                return
 
         # Components
         popup_menu = ft.PopupMenuButton(
