@@ -4,13 +4,15 @@ from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 from cryptography.exceptions import InvalidTag
 
 
-password_hasher = PasswordHasher(
-    time_cost=12,
-    memory_cost=262144,
-    parallelism=12,
-    hash_len=32,
-    salt_len=32
-)
+ARGON2_CONFIG = {
+    "time_cost": 12,
+    "memory_cost": 262144,
+    "parallelism": 12,
+    "hash_len": 32,
+    "salt_len": 32
+}
+
+password_hasher = PasswordHasher(**ARGON2_CONFIG)
 
 
 def generate_hash(master_password: str) -> str:
@@ -20,7 +22,7 @@ def generate_hash(master_password: str) -> str:
 def verify_hash(master_password_hash: str, master_password: str) -> bool:
     try:
         return password_hasher.verify(master_password_hash, master_password)
-    except Exception as e:
+    except Exception:
         return False
 
 
@@ -28,10 +30,10 @@ def derive_master_password(master_password: str, salt: bytes) -> bytes:
     return low_level.hash_secret_raw(
         secret=(master_password).encode(),
         salt=salt,
-        time_cost=12,
-        memory_cost=262144,
-        parallelism=12,
-        hash_len=32,
+        time_cost=ARGON2_CONFIG["time_cost"],
+        memory_cost=ARGON2_CONFIG["memory_cost"],
+        parallelism=ARGON2_CONFIG["parallelism"],
+        hash_len=ARGON2_CONFIG["hash_len"],
         type=low_level.Type.ID
     )
 
