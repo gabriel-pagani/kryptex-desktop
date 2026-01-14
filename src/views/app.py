@@ -401,6 +401,10 @@ class App:
             tiles_list.controls = build_expansion_tiles_controls(e.control.value)
             self.page.update()
 
+        def generate_random_password(e):
+            password_input.value = generate_password()
+            password_input.update()
+
         def close_dialog(e):
             service_input.error = None
             password_input.error = None
@@ -414,6 +418,9 @@ class App:
             
             self.page.pop_dialog()
 
+        def open_new_password_dialog(e):
+            self.page.show_dialog(new_password_dialog)
+
         def open_edit_password_dialog(e, password: Password):
             associated_data = f'user_id:{self.user.id};'.encode()
             decrypted_password = decrypt_password(self.user_key, password.iv, password.encrypted_password, associated_data)
@@ -426,10 +433,6 @@ class App:
             type_dropdown.value = int(password.type_id) if password.type_id else ""
             
             self.page.show_dialog(edit_password_dialog)
-
-        def generate_random_password(e):
-            password_input.value = generate_password()
-            password_input.update()
 
         def save_new_password(e):
             service_input.error = None
@@ -478,9 +481,6 @@ class App:
             else:
                 close_dialog(e)
                 self.show_message(3, "Error saving password! Please try again later.")
-
-        def open_new_password_dialog(e):
-            self.page.show_dialog(new_password_dialog)
 
         # Components
         popup_menu = ft.PopupMenuButton(
