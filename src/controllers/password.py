@@ -159,7 +159,7 @@ class Password:
             fields = list()
             values = list()
             
-            if type_id is not None or type_id == 0:
+            if type_id is not None:
                 fields.append("type_id = ?")
                 values.append(None if type_id == 0 else type_id)
             if service is not None or service == "":
