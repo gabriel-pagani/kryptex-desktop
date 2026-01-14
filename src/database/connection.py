@@ -19,7 +19,8 @@ def create_tables(conn: sqlite3.Connection):
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             salt BLOB NOT NULL,
             username TEXT NOT NULL UNIQUE, 
-            master_password_hash TEXT NOT NULL
+            master_password_hash TEXT NOT NULL,
+            is_admin BOOLEAN DEFAULT FALSE,
         );
                        
         CREATE TABLE IF NOT EXISTS password_types (
