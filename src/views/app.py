@@ -556,18 +556,18 @@ class App:
         def cancel_delete_password(e):
             self.page.pop_dialog()
 
-        delete_confirmation_dialog = ft.AlertDialog(
-            modal=True,
-            title=ft.Text("Confirm deletion"),
-            content=ft.Text("Are you sure you want to delete this password?"),
-            actions=[
-                ft.TextButton("No", on_click=cancel_delete_password),
-                ft.TextButton("Yes", on_click=confirm_delete_password),
-            ],
-            actions_alignment=ft.MainAxisAlignment.END,
-        )
-
         def delete_password(e, password: Password):
+            delete_confirmation_dialog = ft.AlertDialog(
+                modal=True,
+                title=ft.Text("Confirm deletion"),
+                content=ft.Text("Are you sure you want to delete this password?"),
+                actions=[
+                    ft.TextButton("No", on_click=cancel_delete_password),
+                    ft.TextButton("Yes", on_click=confirm_delete_password),
+                ],
+                actions_alignment=ft.MainAxisAlignment.END,
+            )
+            
             self.page.show_dialog(delete_confirmation_dialog)
 
         # Components
