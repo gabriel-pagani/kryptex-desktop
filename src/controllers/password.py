@@ -1,7 +1,7 @@
 from typing import Optional, List
 from datetime import datetime
 from database.connection import execute_query
-from utils.cryptor import encrypt_password
+from utils.cryptor import encrypt_data
 
 
 class Password:
@@ -28,20 +28,16 @@ class Password:
         cls,         
         user_id: int,
         user_key: bytes,
-        service: str,
-        password: str,
+        data: dict,
         type_id: Optional[int] = None,
-        login: Optional[str] = None,
-        url: Optional[str] = None,
-        notes: Optional[str] = None,
     ) -> Optional['Password']:
         try:
             associated_data = f'user_id:{user_id};'.encode()
-            iv, encrypted_password = encrypt_password(user_key, password, associated_data)
+            iv, encrypted_data = encrypt_data(user_key, data, associated_data)
             
             response = execute_query(
-                "INSERT INTO passwords (user_id, type_id, service, login, iv, encrypted_password, url, notes) VALUES (?, ?, ?, ?, ?, ?, ?, ?) RETURNING *",
-                (user_id, type_id, service, login, iv, encrypted_password, url, notes)
+                "INSERT INTO passwords (user_id, type_id, iv, encrypted_data) VALUES (?, ?, ?, ?) RETURNING *",
+                (user_id, type_id, iv, encrypted_data)
             )
 
             if response != []:
@@ -49,15 +45,10 @@ class Password:
                     id=response[0][0],
                     user_id=response[0][1],
                     type_id=response[0][2],
-                    service=response[0][3],
-                    login=response[0][4],
-                    iv=response[0][5],
-                    encrypted_password=response[0][6],
-                    url=response[0][7],
-                    notes=response[0][8],
-                    created_at=response[0][9],
-                    updated_at=response[0][10],
-                    deleted_at=response[0][11],
+                    iv=response[0][3],
+                    encrypted_data=response[0][4],
+                    created_at=response[0][5],
+                    updated_at=response[0][6],
                 )
             return None
             
