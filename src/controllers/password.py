@@ -112,20 +112,12 @@ class Password:
         self,
         user_key: bytes,
         type_id: Optional[int] = None,
-        service: Optional[str] = None,
-        login: Optional[str] = None,
-        password: Optional[str] = None,
-        url: Optional[str] = None,
-        notes: Optional[str] = None,
-        deleted_at: Optional[datetime] = None,
+        data: Optional[dict] = None,
     ) -> bool:
         try:
-            if not self.id:
-                return False
-
-            if password:
+            if data:
                 associated_data = f'user_id:{self.user_id};'.encode()
-                iv, encrypted_password = encrypt_password(user_key, password, associated_data)
+                iv, encrypted_data = encrypt_data(user_key, data, associated_data)
 
             fields = list()
             values = list()
@@ -133,27 +125,12 @@ class Password:
             if type_id is not None:
                 fields.append("type_id = ?")
                 values.append(None if type_id == 0 else type_id)
-            if service is not None or service == "":
-                fields.append("service = ?")
-                values.append(service)
-            if login is not None or login == "":
-                fields.append("login = ?")
-                values.append(login)
-            if iv:
+            if data:
                 fields.append("iv = ?")
                 values.append(iv)
-            if encrypted_password:
-                fields.append("encrypted_password = ?")
-                values.append(encrypted_password)
-            if url is not None or url == "":
-                fields.append("url = ?")
-                values.append(url)
-            if notes is not None or notes == "":
-                fields.append("notes = ?")
-                values.append(notes)
-            if deleted_at is not None or deleted_at == "":
-                fields.append("deleted_at = ?")
-                values.append(deleted_at)
+
+                fields.append("encrypted_data = ?")
+                values.append(encrypted_data)
             
             if not fields:
                 return False
@@ -165,13 +142,8 @@ class Password:
             )
             
             self.type_id = type_id if type_id else self.type_id
-            self.service = service if service else self.service
-            self.login = login if login else self.login
             self.iv = iv if iv else self.iv
-            self.encrypted_password = encrypted_password if encrypted_password else self.encrypted_password
-            self.url = url if url else self.url
-            self.notes = notes if notes else self.notes
-            self.deleted_at = deleted_at if deleted_at else self.deleted_at
+            self.encrypted_data = encrypted_data if encrypted_data else self.encrypted_data
 
             return True
 
