@@ -11,6 +11,7 @@ class HomeView:
         self.page = page
         self.user = user
         self.user_key = user_key
+        self.password_types = list()
         self.on_logout = on_logout
 
     def show_home(self):
