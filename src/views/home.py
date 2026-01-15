@@ -234,11 +234,22 @@ class HomeView:
                 close_dialog(e)
                 show_message(self.page, 3, "Error editing password! Please try again later.")
 
-        def confirm_delete_password(e):
+        def confirm_delete_password(e, password: Password):
             ...
 
-        def delete_password(e, password: Password):
-            ...
+        def open_delete_password_dialog(e, password: Password):
+            delete_password_confirmation_dialog = ft.AlertDialog(
+                modal=True,
+                title=ft.Text("Confirm deletion"),
+                content=ft.Text("Are you sure you want to delete this password? This action cannot be undone."),
+                actions=[
+                    ft.TextButton("No", on_click=lambda e: self.page.pop_dialog()),
+                    ft.TextButton("Yes", on_click=lambda e: confirm_delete_password(e, password)),
+                ],
+                actions_alignment=ft.MainAxisAlignment.END,
+            )
+            
+            self.page.show_dialog(delete_password_confirmation_dialog)
 
         edit_password_dialog = ft.AlertDialog(
             modal=True,
@@ -263,7 +274,7 @@ class HomeView:
                 spacing=10
             ),
             actions=[
-                ft.TextButton("Delete", on_click=lambda e: delete_password(e, editing_password)),
+                ft.TextButton("Delete", on_click=lambda e: open_delete_password_dialog(e, editing_password)),
                 ft.TextButton("Cancel", on_click=close_dialog),
                 ft.TextButton("Save", on_click=lambda e: save_edited_password(e, editing_password)),
             ],
