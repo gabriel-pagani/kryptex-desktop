@@ -101,7 +101,7 @@ class HomeView:
             type_dropdown.value = ""
             
             self.page.pop_dialog()       
-        
+
         def open_new_password_dialog(e):
             self.page.show_dialog(new_password_dialog)
 
@@ -143,6 +143,7 @@ class HomeView:
             if new_password:
                 close_dialog(e)
                 show_message(self.page, 1, "Password saved successfully!")
+                refresh_tiles_list()
             else:
                 close_dialog(e)
                 show_message(self.page, 3, "Error saving password! Please try again later.")   
@@ -231,6 +232,7 @@ class HomeView:
             if updated:
                 close_dialog(e)
                 show_message(self.page, 1, "Password edited successfully!")
+                refresh_tiles_list()
             else:
                 close_dialog(e)
                 show_message(self.page, 3, "Error editing password! Please try again later.")
@@ -242,6 +244,7 @@ class HomeView:
                 self.page.pop_dialog()  # Close the deletion confirmation dialog
                 close_dialog(e)         # Close the password editing dialog
                 show_message(self.page, 1, "Password deleted successfully!")
+                refresh_tiles_list()
             else:
                 self.page.pop_dialog()  # Close the deletion confirmation dialog
                 close_dialog(e)         # Close the password editing dialog
@@ -292,6 +295,69 @@ class HomeView:
         )
 
         # Page components
+        def build_tiles_controls() -> list[ft.Control]:
+            self.user_passwords = Password.get_all_by_user(self.user.id)
+            
+            # Groups passwords by type
+            passwords_by_type = dict()
+            for type in self.password_types:
+                temp_passwords_by_type = list()
+                for password in self.user_passwords:
+                    if password.type_id == type.id:
+                        temp_passwords_by_type.append(password)
+                        
+                passwords_by_type[type.name] = temp_passwords_by_type
+
+            temp_passwords_by_type = list()
+            for password in self.user_passwords:
+                if password.type_id is None:
+                    temp_passwords_by_type.append(password)
+                        
+                passwords_by_type['Others'] = temp_passwords_by_type
+
+            # Create the expansion tiles based on the passwords_by_type dictionary
+            expansion_tiles_controls = list()
+            for password_type, passwords in passwords_by_type.items():
+                tile_controls = list()
+                for password in passwords:
+                    try:
+                        associated_data = f"user_id:{self.user.id};".encode()
+                        decrypted_data = decrypt_data(self.user_key, password.iv, password.encrypted_data, associated_data)
+                        service = decrypted_data.get("service", "Unknown Service")
+                        login = decrypted_data.get("login", "")
+                    except Exception:
+                        service = "Error decrypting"
+                        login = ""
+
+                    tile_controls.append(
+                        ft.ListTile(
+                            title=ft.Text(service),
+                            subtitle=ft.Text(login),
+                            on_click=lambda e, p=password: open_edit_password_dialog(e, p),
+                        )
+                    )
+
+                if not tile_controls:
+                        continue
+                
+                expansion_tiles_controls.append(
+                    ft.ExpansionTile(
+                        title=ft.Text(password_type, weight=ft.FontWeight.BOLD),
+                        subtitle=ft.Text(f"{len(tile_controls)} item(s)", style=ft.TextStyle(italic=True)),
+                        affinity=ft.TileAffinity.PLATFORM,
+                        maintain_state=True,
+                        shape=ft.RoundedRectangleBorder(
+                            side=ft.BorderSide(color=ft.Colors.TRANSPARENT, width=0)
+                        ),
+                        collapsed_shape=ft.RoundedRectangleBorder(
+                            side=ft.BorderSide(color=ft.Colors.TRANSPARENT, width=0)
+                        ),
+                        controls=tile_controls,
+                    )
+                )
+            
+            return expansion_tiles_controls
+
         menu_items = [
             ft.PopupMenuItem(
                 content=ft.Row([ft.Icon(ft.Icons.PERSON, ft.Colors.BLACK), ft.Text("My account"),]),
@@ -389,10 +455,18 @@ class HomeView:
             ],
         )
 
+        def refresh_tiles_list():
+            try:
+                tiles_list.controls = build_tiles_controls()
+                tiles_list.update()
+            except Exception:
+                pass
+
         tiles_list = ft.ListView(
             expand=True,
             spacing=6,
             padding=ft.Padding.only(left=12, right=12, top=8, bottom=12),
+            controls=build_tiles_controls(),
         )
 
         # Layout
