@@ -2,7 +2,7 @@ import flet as ft
 import shutil
 import time
 from utils.ui import show_message
-from utils.cryptor import generate_password
+from utils.cryptor import generate_password, decrypt_data
 from database.connection import DB_PATH
 from controllers.password import Password
 
@@ -178,7 +178,20 @@ class HomeView:
 
         editing_password: Password | None = None
         def open_edit_password_dialog(e, password: Password):
-            ...
+            nonlocal editing_password
+            editing_password = password
+            
+            associated_data = f"user_id:{self.user.id};".encode()
+            decrypted_data = decrypt_data(self.user_key, password.iv, password.encrypted_data, associated_data)
+
+            service_input.value = decrypted_data.get("service")
+            login_input.value = decrypted_data.get("login")
+            password_input.value = decrypted_data.get("password")
+            type_dropdown.value = decrypted_data.get("type_id") if decrypted_data.get("type_id") else ""
+            url_input.value = decrypted_data.get("url")
+            notes_input.value = decrypted_data.get("notes")
+            
+            self.page.show_dialog(edit_password_dialog)
         
         def save_edited_password(e, password: Password):
             ...
