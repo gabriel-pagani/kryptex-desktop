@@ -23,6 +23,32 @@ class HomeView:
                 except Exception as ex:
                     show_message(self.page, 3, "Error exporting database! Please try again later.")
         
+        def confirm_import_database(e, import_path):
+            try:
+                shutil.copy(import_path, DB_PATH)
+                show_message(self.page, 1, "Database imported successfully!")
+                self.page.pop_dialog()
+                self.on_logout(e)
+            except Exception:
+                self.show_message(3, "Error importing database! Please try again later.")
+
+        async def import_database(e):
+            file = await ft.FilePicker().pick_files(file_type=ft.FilePickerFileType.CUSTOM, allowed_extensions=["sqlite3"], allow_multiple=False)
+            
+            import_confirmation_dialog = ft.AlertDialog(
+                modal=True,
+                title=ft.Text("Confirm import"),
+                content=ft.Text("Importing a new database will overwrite all your current data. This action cannot be undone. Are you sure?"),
+                actions=[
+                    ft.TextButton("No", on_click=lambda e: self.page.pop_dialog()),
+                    ft.TextButton("Yes", on_click=lambda e: confirm_import_database(e, file[0].path)),
+                ],
+                actions_alignment=ft.MainAxisAlignment.END,
+            )
+            
+            if file:
+                self.page.show_dialog(import_confirmation_dialog)
+
         # Components
         menu_items = [
             ft.PopupMenuItem(
@@ -38,7 +64,7 @@ class HomeView:
                         content=ft.Row(
                             [ft.Icon(ft.Icons.UPLOAD, ft.Colors.BLACK), ft.Text("Import passwords"),]
                         ),
-                        # on_click=import_database, 
+                        on_click=import_database,
                     ),
                     ft.PopupMenuItem(
                         content=ft.Row([ft.Icon(ft.Icons.DOWNLOAD, ft.Colors.BLACK), ft.Text("Export passwords"),]),
