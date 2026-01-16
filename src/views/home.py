@@ -19,6 +19,20 @@ class HomeView:
         self.on_logout = on_logout
 
     def show_home(self):
+        def refresh_page():
+            try:
+                self.password_types = PasswordType.get_all()
+            except Exception:
+                self.password_types = []
+
+            type_dropdown.options = [
+                *(ft.dropdown.Option(key=str(t.id), text=t.name) for t in self.password_types),
+                ft.dropdown.Option(key="", text="Others"),
+            ]
+
+            tiles_list.controls = build_tiles_controls()
+            self.page.update()
+        
         # Dialogs components
         service_input = ft.TextField(
             label="Service", 
@@ -190,7 +204,7 @@ class HomeView:
             if new_password:
                 close_dialog(e)
                 show_message(self.page, 1, "Password saved successfully!")
-                refresh_tiles_list()
+                refresh_page()
             else:
                 close_dialog(e)
                 show_message(self.page, 3, "Error saving password! Please try again later.")   
@@ -279,7 +293,7 @@ class HomeView:
             if updated:
                 close_dialog(e)
                 show_message(self.page, 1, "Password edited successfully!")
-                refresh_tiles_list()
+                refresh_page()
             else:
                 close_dialog(e)
                 show_message(self.page, 3, "Error editing password! Please try again later.")
@@ -291,7 +305,7 @@ class HomeView:
                 self.page.pop_dialog()  # Close the deletion confirmation dialog
                 close_dialog(e)         # Close the password editing dialog
                 show_message(self.page, 1, "Password deleted successfully!")
-                refresh_tiles_list()
+                refresh_page()
             else:
                 self.page.pop_dialog()  # Close the deletion confirmation dialog
                 close_dialog(e)         # Close the password editing dialog
@@ -503,6 +517,10 @@ class HomeView:
 
         menu_items = [
             ft.PopupMenuItem(
+                content=ft.Row([ft.Icon(ft.Icons.REFRESH, ft.Colors.BLACK), ft.Text("Refresh app")]),
+                on_click=lambda e: refresh_page(),
+            ),
+            ft.PopupMenuItem(
                 content=ft.Row([ft.Icon(ft.Icons.PERSON, ft.Colors.BLACK), ft.Text("Update account"),]),
                 on_click=open_my_account_dialog,
             )
@@ -597,13 +615,6 @@ class HomeView:
                 ft.Container(popup_menu, padding=ft.Padding.only(right=16)),
             ],
         )
-
-        def refresh_tiles_list():
-            try:
-                tiles_list.controls = build_tiles_controls()
-                tiles_list.update()
-            except Exception:
-                pass
 
         tiles_list = ft.ListView(
             expand=True,
