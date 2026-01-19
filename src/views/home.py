@@ -310,8 +310,7 @@ class HomeView:
 
             selected_type = PasswordType.get(int(selected))
             if not selected_type:
-                show_message(self.page, 3, "Selected password type not found.")
-                refresh_page()
+                type_dropdown.error_text = "Selected password type not found!"
                 return
 
             def do_delete(e):
@@ -322,7 +321,7 @@ class HomeView:
                     show_message(self.page, 1, "Password type deleted successfully!")
                     refresh_page()
                 else:
-                    show_message(self.page, 3, "Could not delete type (it may be in use).")
+                    type_dropdown.error_text = "Warning! This type may be in use."
 
             confirm_dialog = ft.AlertDialog(
                 modal=True,
